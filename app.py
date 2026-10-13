@@ -1,35 +1,114 @@
 
 import streamlit as st
 
+import plotly.express as px
 st.set_page_config(
     page_title="Smart EV Battery Monitor",
     page_icon="🔋",
     layout="wide"
 )
 
-st.title("🔋 Smart EV Battery Health & Range Prediction")
-
-st.divider()
-
-st.subheader("📌 Project Overview")
-
-st.write(
+# Sidebar navigation
+st.sidebar.markdown(
     """
-    This prototype demonstrates electric vehicle battery monitoring
-    and driving-range estimation using simulated battery conditions.
-
-    **Key features**
-    - Battery charge, health, and temperature monitoring
-    - Estimated remaining energy and driving range
-    - Driving scenario simulation and rule-based risk alerts
-    - Formula-based versus machine-learning range comparison
-    - Model evaluation metrics and saved prediction history
-    - Downloadable scenario and prediction reports
-
-    **Technology stack:** Python, Streamlit, Pandas,
-    NumPy, and Scikit-learn.
-    """
+    <div style="padding: 8px 0 20px 0;">
+        <div style="font-size: 12px; color: #00E5FF;
+                    letter-spacing: 2px; font-weight: bold;">
+            SMART MOBILITY
+        </div>
+        <h2 style="color: #EAF4FF; margin: 8px 0;">
+            ⚡ EV Monitor
+        </h2>
+        <p style="color: #91AEC5; font-size: 12px;">
+            Battery Intelligence System
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
+
+page = st.sidebar.radio(
+    "NAVIGATION",
+    [
+        "Dashboard",
+        "Driving Simulator",
+        "Scenario Comparison",
+        "ML Predictions",
+        "Prediction History",
+        "Model Performance",
+    ],
+)
+st.sidebar.markdown("---")
+st.sidebar.caption("Smart EV Monitor • Educational Prototype")
+
+
+
+st.markdown("""
+<div style="
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 18px;
+    margin-bottom: 18px;
+    background: #101F33;
+    border: 1px solid #174B65;
+    border-radius: 12px;
+">
+    <div>
+        <div style="
+            color: #00E5FF;
+            font-size: 11px;
+            letter-spacing: 2px;
+            font-weight: bold;
+        ">SMART MOBILITY / BATTERY INTELLIGENCE</div>
+        <h2 style="
+            color: #EAF4FF;
+            margin: 5px 0 0 0;
+        ">⚡ EV Battery Dashboard</h2>
+    </div>
+    <div style="
+        color: #39FF88;
+        border: 1px solid #27664D;
+        border-radius: 20px;
+        padding: 7px 12px;
+        font-size: 12px;
+        white-space: nowrap;
+    ">● PROTOTYPE</div>
+</div>
+""", unsafe_allow_html=True)
+
+
+
+st.markdown("""
+<div style="
+    background: linear-gradient(135deg, #101F33, #0B2940);
+    border: 1px solid #00E5FF;
+    border-radius: 14px;
+    padding: 24px;
+    margin: 10px 0 20px 0;
+">
+    <h3 style="color: #00E5FF; margin-top: 0;">
+        ◈ PROJECT OVERVIEW
+    </h3>
+    <p style="color: #EAF4FF;">
+        An interactive prototype for monitoring electric vehicle
+        battery conditions and estimating remaining driving range.
+    </p>
+    <h4 style="color: #00E5FF;">Key Features</h4>
+    <ul style="color: #D5E6F5; line-height: 1.9;">
+        <li>Battery charge, health, and temperature monitoring</li>
+        <li>Estimated remaining energy and driving range</li>
+        <li>Driving scenario simulation and risk alerts</li>
+        <li>Formula-based versus machine-learning predictions</li>
+        <li>Model evaluation and prediction history</li>
+        <li>Downloadable reports</li>
+    </ul>
+    <p style="color: #91AEC5; font-size: 13px;">
+        TECHNOLOGY: Python · Streamlit · Pandas · NumPy · Scikit-learn
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
 
 st.info(
     "This is an educational prototype using simulated data. "
@@ -79,22 +158,85 @@ else:
     stress = "LOW"
     recommendation = "Temperature is within this demo's low-stress range."
 
-st.subheader("Battery Dashboard")
 
-col1, col2, col3 = st.columns(3)
 
-col1.metric("Battery Health", f"{health}%")
-col2.metric("State of Charge", f"{soc}%")
-col3.metric("Temperature", f"{temperature} °C")
+st.markdown("""
+<style>
+div[data-testid="stMetric"] {
+    background: linear-gradient(145deg, #101F33, #142D46);
+    border: 1px solid #174B65;
+    border-radius: 12px;
+    padding: 12px 14px;
+    min-height: 105px;
+}
+div[data-testid="stMetricLabel"] {
+    color: #A9C8DE;
+    font-size: 12px;
+}
+div[data-testid="stMetricValue"] {
+    color: #00E5FF;
+    font-size: 25px;
+}
+</style>
+""", unsafe_allow_html=True)
 
-col4, col5 = st.columns(2)
+st.markdown("### 🔋 Battery Overview")
 
-col4.metric("Estimated Remaining Range", f"{estimated_range:.1f} km")
-col5.metric("Estimated Remaining Energy", f"{remaining_energy:.1f} kWh")
+m1, m2, m3, m4 = st.columns(4, gap="small")
+
+m1.metric("Battery Health", f"{health}%")
+m2.metric("State of Charge", f"{soc}%")
+m3.metric("Remaining Range", f"{estimated_range:.1f} km")
+m4.metric("Temperature", f"{temperature} °C")
+
+st.progress(
+    soc / 100,
+    text=f"Battery charge level: {soc}%"
+)
+
+with st.expander("View additional battery details"):
+    st.metric("Estimated Remaining Energy", f"{remaining_energy:.1f} kWh")
+
+
+col1, col2, col3 = st.columns(3, gap="medium")
+
+col1.metric("🔋 Battery Health", f"{health}%")
+col2.metric("⚡ State of Charge", f"{soc}%")
+col3.metric("🌡️ Temperature", f"{temperature} °C")
+
+col4, col5 = st.columns(2, gap="medium")
+
+col4.metric(
+    "🛣️ Estimated Remaining Range",
+    f"{estimated_range:.1f} km"
+)
+col5.metric(
+    "🔌 Estimated Remaining Energy",
+    f"{remaining_energy:.1f} kWh"
+)
+
 
 st.subheader("Battery Status")
 
-st.progress(soc / 100, text=f"Charge level: {soc}%")
+
+st.markdown("""
+<style>
+div[data-testid="stProgressBar"] > div > div {
+    background: linear-gradient(90deg, #00E5FF, #39FF88);
+    border-radius: 20px;
+}
+div[data-testid="stProgressBar"] {
+    background-color: #1B3045;
+    border-radius: 20px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.progress(
+    soc / 100,
+    text=f"⚡ Battery charge level: {soc}%"
+)
+
 
 if stress == "HIGH":
     st.error(f"Battery stress: {stress}")
@@ -113,8 +255,26 @@ st.caption(
 
 st.divider()
 
-st.subheader("🧪 Driving Scenario Simulator")
-st.write("Choose a scenario to see example battery conditions.")
+
+st.markdown("""
+<div style="
+    background: linear-gradient(135deg, #101F33, #0B2940);
+    border: 1px solid #174B65;
+    border-left: 4px solid #00E5FF;
+    border-radius: 14px;
+    padding: 20px;
+    margin: 18px 0;
+">
+    <h3 style="color: #00E5FF; margin: 0 0 8px 0;">
+        🧪 Driving Scenario Simulator
+    </h3>
+    <p style="color: #B8D5E8; margin: 0;">
+        Explore how weather, battery charge, and battery health
+        affect your estimated driving range.
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
 
 scenario = st.selectbox(
     "Select a driving scenario",
@@ -221,7 +381,26 @@ st.write(risk_message)
 
 # Compare all driving scenarios
 st.divider()
-st.subheader("📊 Scenario Comparison Dashboard")
+
+st.markdown("""
+<div style="
+    background: linear-gradient(135deg, #101F33, #0B2940);
+    border: 1px solid #174B65;
+    border-left: 4px solid #39FF88;
+    border-radius: 14px;
+    padding: 20px;
+    margin: 18px 0;
+">
+    <h3 style="color: #39FF88; margin: 0 0 8px 0;">
+        📊 Scenario Comparison Dashboard
+    </h3>
+    <p style="color: #B8D5E8; margin: 0;">
+        Compare estimated range, battery charge, battery health,
+        and temperature across different driving conditions.
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
 
 scenario_names = list(scenarios.keys())
 
@@ -251,29 +430,148 @@ import pandas as pd
 
 comparison_df = pd.DataFrame(comparison_data)
 
-st.write("### Estimated Range by Scenario")
 
-st.bar_chart(
-    comparison_df,
-    x="Scenario",
-    y="Estimated Range (km)",
-)
 
-st.write("### Battery Charge and Health")
+left_chart, right_chart = st.columns([1.3, 1], gap="medium")
 
-charge_health_df = comparison_df.set_index("Scenario")[
-    ["Battery Charge (%)", "Battery Health (%)"]
-]
+with left_chart:
+    st.markdown("### ⚡ Estimated Range")
 
-st.bar_chart(charge_health_df)
+    fig_range = px.bar(
+        comparison_df,
+        x="Scenario",
+        y="Estimated Range (km)",
+        color="Estimated Range (km)",
+        color_continuous_scale=["#00E5FF", "#39FF88"],
+        template="plotly_dark",
+        text_auto=".1f",
+    )
 
-st.write("### Temperature by Scenario")
+    fig_range.update_layout(
+        paper_bgcolor="#101F33",
+        plot_bgcolor="#101F33",
+        font_color="#EAF4FF",
+        coloraxis_showscale=False,
+        margin=dict(l=10, r=10, t=20, b=10),
+        xaxis=dict(
+    title="",
+    tickangle=0,
+    tickfont=dict(size=10),
+),
+yaxis=dict(
+    title="Range (km)",
+    tickfont=dict(size=10),
+),
+    )
 
-temperature_df = comparison_df.set_index("Scenario")[
-    ["Temperature (°C)"]
-]
+    fig_range.update_traces(textposition="outside")
+    st.plotly_chart(fig_range, use_container_width=True)
 
-st.bar_chart(temperature_df)
+
+
+
+
+with right_chart:
+    st.markdown("### 🔋 Battery Health")
+
+    charge_health_df = comparison_df[
+        ["Scenario", "Battery Charge (%)", "Battery Health (%)"]
+    ]
+
+    fig_battery = px.bar(
+        charge_health_df,
+        x="Scenario",
+        y=["Battery Charge (%)", "Battery Health (%)"],
+        barmode="group",
+        color_discrete_sequence=["#00E5FF", "#39FF88"],
+        template="plotly_dark",
+        text_auto=".0f",
+    )
+
+    fig_battery.update_layout(
+        paper_bgcolor="#101F33",
+        plot_bgcolor="#101F33",
+        font_color="#EAF4FF",
+        xaxis_title="",
+        yaxis_title="Percentage (%)",
+        yaxis_range=[0, 110],
+        legend_title_text="",
+        margin=dict(l=10, r=10, t=20, b=10),
+        xaxis=dict(
+    title="",
+    tickangle=-25,
+    tickfont=dict(size=9),
+),
+yaxis=dict(
+    title="%",
+    tickfont=dict(size=10),
+),
+bargap=0.25,
+        
+    )
+
+    fig_battery.update_traces(textposition="outside")
+    st.plotly_chart(fig_battery, use_container_width=True)
+
+
+
+
+
+st.markdown("---")
+
+temp_panel, details_panel = st.columns([1.4, 1], gap="medium")
+
+with temp_panel:
+    st.markdown("### 🌡️ Temperature Analysis")
+
+    temperature_df = comparison_df[
+        ["Scenario", "Temperature (°C)"]
+    ]
+
+    fig_temp = px.line(
+        temperature_df,
+        x="Scenario",
+        y="Temperature (°C)",
+        markers=True,
+        template="plotly_dark",
+        color_discrete_sequence=["#39FF88"],
+    )
+
+    fig_temp.update_layout(
+        paper_bgcolor="#101F33",
+        plot_bgcolor="#101F33",
+        font_color="#EAF4FF",
+        xaxis=dict(
+            title="",
+            tickangle=-20,
+            tickfont=dict(size=9),
+        ),
+        yaxis=dict(
+            title="Temperature (°C)",
+            tickfont=dict(size=10),
+        ),
+        margin=dict(l=10, r=10, t=20, b=10),
+    )
+
+    fig_temp.update_traces(
+        line=dict(width=3),
+        marker=dict(size=7, color="#00E5FF"),
+    )
+
+    st.plotly_chart(fig_temp, use_container_width=True)
+
+with details_panel:
+    st.markdown("### ◈ Battery Summary")
+
+    st.metric("Battery Health", f"{health}%")
+    st.metric("State of Charge", f"{soc}%")
+    st.metric("Estimated Range", f"{estimated_range:.1f} km")
+
+    st.caption(
+        "Summary values reflect the current prototype inputs."
+    )
+
+
 
 st.write("### Exact Comparison Values")
 
@@ -530,3 +828,26 @@ else:
     st.warning(
         "Evaluation file not found. Run predict_range.py first."
     )
+
+
+st.markdown("""
+<div style="
+    margin-top: 40px;
+    padding: 18px;
+    text-align: center;
+    background: #101F33;
+    border-top: 1px solid #00E5FF;
+    border-radius: 10px;
+">
+    <p style="color: #00E5FF; margin-bottom: 6px;">
+        ⚡ SMART EV MONITOR
+    </p>
+    <p style="color: #91AEC5; font-size: 12px; margin-bottom: 0;">
+        Battery Health & Range Prediction • Educational Prototype
+    </p>
+    <p style="color: #91AEC5; font-size: 12px; margin-top: 6px;">
+        Estimates are simulated and should not be used for safety-critical
+        driving or battery decisions.
+    </p>
+</div>
+""", unsafe_allow_html=True)
