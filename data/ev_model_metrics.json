@@ -1,0 +1,7 @@
+{
+  "mae_km": 7.254693826645581,
+  "r2_score": 0.9738372242004402,
+  "training_rows": 800,
+  "testing_rows": 200,
+  "data_type": "synthetic"
+}
